@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日产千图方案调研</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── TOKEN SYSTEM ───────────────────────────── */
+:root {
+  /* primitives */
+  --gray-0: #0f0f0f;
+  --gray-1: #1e1e1e;
+  --gray-2: #3a3a3a;
+  --gray-3: #6b6b6b;
+  --gray-4: #a3a3a3;
+  --gray-5: #d4d4d4;
+  --gray-6: #ebebeb;
+  --gray-7: #f5f5f5;
+  --gray-8: #fafafa;
+
+  /* 3 accent colors only */
+  --blue:    #1a52a0;
+  --blue-bg: #eef3fc;
+  --blue-bd: #c2d4f0;
+
+  --amber:    #a05c00;
+  --amber-bg: #fef7ec;
+  --amber-bd: #f0d9a8;
+
+  --red:    #c0392b;   /* accent / emphasis only */
+  --red-bg: #fdf1f0;
+  --red-bd: #f0c5c0;
+
+  /* semantics */
+  --bg:          var(--gray-8);
+  --bg-raised:   var(--gray-7);
+  --bg-sunken:   var(--gray-6);
+  --border:      var(--gray-5);
+  --border-deep: var(--gray-4);
+
+  --text-1: var(--gray-0);
+  --text-2: var(--gray-2);
+  --text-3: var(--gray-3);
+  --text-4: var(--gray-4);
+  --text-inv: #fff;
+
+  --accent:    var(--red);
+  --accent-bg: var(--red-bg);
+  --accent-bd: var(--red-bd);
+
+  --font-d: 'DM Serif Display', Georgia, serif;
+  --font-b: 'DM Sans', system-ui, sans-serif;
+}
+
+html{font-size:15px}
+body{
+  font-family:var(--font-b);
+  background:var(--bg);
+  color:var(--text-1);
+  line-height:1.65;
+  max-width:980px;
+  margin:0 auto;
+  padding:0 44px 100px;
+}
+
+/* ── NAV ──────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:99;
+  background:rgba(250,250,250,.96);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  margin:0 -44px;padding:10px 44px;
+  display:flex;gap:4px;overflow-x:auto;white-space:nowrap;
+}
+.nav a{
+  font-size:12px;color:var(--text-3);text-decoration:none;
+  padding:4px 12px;border-radius:20px;transition:.12s;font-weight:500;
+}
+.nav a:hover{background:var(--bg-sunken);color:var(--text-2)}
+
+/* ── COVER ───────────────────────────────── */
+.cover{border-bottom:1.5px solid var(--text-1);padding:56px 0 44px;margin-bottom:60px}
+.cover-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-4);font-weight:500;margin-bottom:16px}
+.cover h1{font-family:var(--font-d);font-size:44px;line-height:1.1;color:var(--text-1);margin-bottom:16px;max-width:560px}
+.cover h1 em{font-style:italic;color:var(--accent)}
+.cover-sub{font-size:14px;color:var(--text-3);max-width:480px;line-height:1.75;margin-bottom:32px}
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;
+}
+.kpi{background:var(--bg);padding:16px 18px}
+.kpi-val{font-family:var(--font-d);font-size:26px;color:var(--accent);line-height:1;margin-bottom:4px}
+.kpi-key{font-size:11px;color:var(--text-4);line-height:1.4}
+
+/* ── SECTION ─────────────────────────────── */
+.sec{margin-bottom:68px}
+.sec-num{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:8px}
+.sec h2{font-family:var(--font-d);font-size:26px;color:var(--text-1);margin-bottom:8px;line-height:1.2}
+.sec-sub{font-size:13.5px;color:var(--text-3);margin-bottom:28px;max-width:620px;line-height:1.75}
+
+/* ── METRIC ROW ──────────────────────────── */
+.metric-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;
+}
+.mc{background:var(--bg);padding:18px 20px;text-align:center}
+.mc-val{font-family:var(--font-d);font-size:28px;line-height:1;margin-bottom:4px;color:var(--text-1)}
+.mc-val.hi{color:var(--accent)}
+.mc-key{font-size:11.5px;color:var(--text-4);line-height:1.4}
+
+/* ── COMPARE ─────────────────────────────── */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.cmp{border-radius:10px;padding:20px;border:1px solid var(--border)}
+.cmp.now{background:var(--bg-raised)}
+.cmp.goal{background:var(--bg-sunken);border-color:var(--border-deep)}
+.cmp-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;color:var(--text-4)}
+.cmp.goal .cmp-label{color:var(--text-2)}
+.cmp-row{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text-2);margin-bottom:7px}
+.cmp-row:last-child{margin-bottom:0}
+.cmp-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px;background:var(--border-deep)}
+.cmp.goal .cmp-dot{background:var(--text-2)}
+
+/* ── CALLOUT ─────────────────────────────── */
+.callout{
+  border-left:2.5px solid var(--accent);background:var(--accent-bg);
+  border-radius:0 7px 7px 0;padding:12px 16px;
+  font-size:13px;color:var(--text-2);line-height:1.7;margin:16px 0;
+}
+.callout strong{color:var(--accent);font-weight:500}
+
+/* ── DEMAND CARDS ────────────────────────── */
+.demand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.dc{
+  border-radius:10px;padding:18px 20px;
+  border:1px solid var(--border);background:var(--bg-raised);
+  position:relative;overflow:hidden;
+}
+.dc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.dc.p0::before{background:var(--text-1)}
+.dc.p1::before{background:var(--gray-3)}
+.dc.p2::before{background:var(--gray-5)}
+.dc-pct{
+  position:absolute;right:14px;top:12px;
+  font-family:var(--font-d);font-size:22px;
+  opacity:.1;color:var(--text-1);line-height:1;
+}
+.dc-tier{font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;color:var(--text-4)}
+.dc.p0 .dc-tier{color:var(--text-2)}
+.dc-name{font-size:14px;font-weight:500;color:var(--text-1);margin-bottom:5px}
+.dc-desc{font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:8px}
+.dc-tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:10.5px;padding:2px 8px;border-radius:3px;font-weight:500}
+.tag-auto{background:var(--bg-sunken);color:var(--text-2);border:1px solid var(--border)}
+.tag-semi{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd)}
+.tag-human{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd)}
+.tag-skip{background:var(--bg-raised);color:var(--text-4);border:1px solid var(--border)}
+
+/* ── AUTO BAR ────────────────────────────── */
+.auto-bar-wrap{border:1px solid var(--border);border-radius:10px;padding:20px 24px;background:var(--bg)}
+.auto-bar-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-4);margin-bottom:14px}
+.auto-bar{display:flex;border-radius:6px;overflow:hidden;height:32px;gap:2px}
+.ab{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+.ab-1{background:var(--gray-0);color:var(--text-inv);flex:4}
+.ab-2{background:var(--gray-2);color:var(--text-inv);flex:4}
+.ab-3{background:var(--gray-4);color:var(--text-inv);flex:1.2}
+.ab-4{background:var(--gray-6);color:var(--text-3);flex:.8;font-size:10px}
+.auto-legend{display:flex;gap:20px;margin-top:12px;flex-wrap:wrap}
+.al{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-3)}
+.al-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── PANORAMA / TRACKS ───────────────────── */
+.pano{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.tc{border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.tc-head{padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg-raised)}
+.tc-head-badge{
+  display:inline-block;font-size:10px;font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;padding:2px 7px;border-radius:3px;
+  margin-bottom:6px;
+}
+.tc-1 .tc-head-badge{background:var(--text-1);color:var(--text-inv)}
+.tc-2 .tc-head-badge{background:var(--gray-3);color:var(--text-inv)}
+.tc-3 .tc-head-badge{background:var(--gray-5);color:var(--text-2)}
+.tc-head-name{font-family:var(--font-d);font-size:17px;color:var(--text-1);margin-bottom:2px}
+.tc-head-scope{font-size:11.5px;color:var(--text-4)}
+.tc-body{background:var(--bg);padding:14px 18px}
+.tc-step{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:9px 0;border-bottom:0.5px solid var(--bg-sunken);font-size:12.5px;
+}
+.tc-step:last-child{border-bottom:none;padding-bottom:0}
+.ts-n{
+  width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:500;flex-shrink:0;margin-top:1px;
+  color:var(--text-inv);
+}
+.tc-1 .ts-n{background:var(--text-1)}
+.tc-2 .ts-n{background:var(--gray-3)}
+.tc-3 .ts-n{background:var(--gray-4)}
+.ts-t{color:var(--text-2);line-height:1.5}
+.ts-t strong{color:var(--text-1);font-weight:500}
+.shared-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.shared-card{border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--bg-raised)}
+.shared-lbl{font-size:10.5px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text-4);margin-bottom:6px}
+.shared-txt{font-size:12.5px;color:var(--text-2);line-height:1.6}
+
+/* ── TOOLS GRID ──────────────────────────── */
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.tool{border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--bg)}
+.tool-name{font-size:13px;font-weight:500;color:var(--text-1);margin-bottom:4px}
+.tool-role{font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:6px}
+.tool-track{font-size:10.5px;font-weight:500;color:var(--text-4)}
+.tool-track.t1{color:var(--text-1)}
+.tool-track.t2{color:var(--gray-3)}
+.tool-track.t3{color:var(--amber)}
+
+/* ── PIPELINE ────────────────────────────── */
+.pipe{display:flex;flex-direction:column}
+.ps{display:grid;grid-template-columns:50px 1fr;align-items:stretch}
+.pl{display:flex;flex-direction:column;align-items:center}
+.pn{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:500;color:var(--text-inv);
+  background:var(--gray-2);flex-shrink:0;
+}
+.pn.hi{background:var(--text-1)}
+.p-line{flex:1;width:1px;background:var(--border);margin:4px auto;min-height:8px}
+.ps:last-child .p-line{display:none}
+.pr{padding:0 0 20px 16px}
+.ph{display:flex;align-items:center;gap:8px;padding-top:5px;margin-bottom:6px}
+.pname{font-size:14.5px;font-weight:500;color:var(--text-1)}
+.pbadge{font-size:10.5px;padding:2px 7px;border-radius:3px;font-weight:500}
+.pb-auto{background:var(--bg-sunken);color:var(--text-2);border:1px solid var(--border)}
+.pb-ai{background:var(--blue-bg);color:var(--blue)}
+.pb-human{background:var(--bg-raised);color:var(--text-3);border:1px solid var(--border)}
+.pb-mix{background:var(--amber-bg);color:var(--amber)}
+.pdesc{font-size:13px;color:var(--text-3);line-height:1.65;margin-bottom:8px}
+.pbox{
+  background:var(--bg-raised);border-radius:7px;
+  border-left:2px solid var(--border);
+  padding:10px 14px;font-size:12.5px;color:var(--text-2);line-height:1.65;
+}
+.pbox ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+.pbox li::before{content:'› ';color:var(--text-4)}
+
+/* ── AI SOLUTION CARDS (section 06) ─────── */
+.ai-grid{display:flex;flex-direction:column;gap:10px}
+.ai-card{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.ai-head{
+  display:grid;grid-template-columns:200px 80px 80px 1fr;
+  background:var(--bg-raised);border-bottom:1px solid var(--border);
+}
+.ai-head div{
+  padding:10px 14px;font-size:10.5px;font-weight:500;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--text-4);
+}
+.ai-row{
+  display:grid;grid-template-columns:200px 80px 80px 1fr;
+  background:var(--bg);border-bottom:.5px solid var(--bg-sunken);
+}
+.ai-row:last-child{border-bottom:none}
+.ai-row:nth-child(even){background:var(--bg-raised)}
+.ai-cell{padding:13px 14px;font-size:13px;color:var(--text-2);line-height:1.55;vertical-align:top}
+.ai-type{font-weight:500;color:var(--text-1)}
+.ai-sub{font-size:11px;color:var(--text-4);margin-top:2px}
+
+/* AI tool pill */
+.ai-tool{
+  display:inline-block;font-size:11px;font-weight:500;
+  padding:2px 8px;border-radius:4px;margin:2px 2px 0 0;
+  border:1px solid var(--border);background:var(--bg-raised);color:var(--text-2);
+}
+.ai-tool.key{background:var(--text-1);color:var(--text-inv);border-color:var(--text-1)}
+.ai-tool.blue{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd)}
+.ai-tool.amber{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-bd)}
+
+/* AI method visual */
+.ai-method{font-size:12.5px;color:var(--text-2);line-height:1.6}
+.ai-method .flow{
+  display:flex;flex-wrap:wrap;align-items:center;gap:4px;
+  margin-bottom:6px;font-size:12px;
+}
+.flow-step{
+  background:var(--bg-sunken);border:1px solid var(--border);
+  border-radius:4px;padding:2px 8px;color:var(--text-2);font-size:11.5px;white-space:nowrap;
+}
+.flow-arrow{color:var(--text-4);font-size:12px}
+.ai-note{font-size:11.5px;color:var(--text-4);margin-top:4px}
+
+/* PRIORITY */
+.pri{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500}
+.pri-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pd0{background:var(--text-1)}.c0{color:var(--text-1)}
+.pd1{background:var(--gray-3)}.c1{color:var(--gray-3)}
+.pd2{background:var(--gray-5)}.c2{color:var(--text-4)}
+.pd-skip{background:var(--gray-6)}.c-skip{color:var(--text-4)}
+
+/* ── ROADMAP ─────────────────────────────── */
+.phase-list{display:flex;flex-direction:column}
+.phase-item{display:grid;grid-template-columns:160px 1fr;border-top:.5px solid var(--border)}
+.phase-item:last-child{border-bottom:.5px solid var(--border)}
+.phase-l{padding:22px 16px 22px 0}
+.phase-num{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:4px}
+.phase-time{font-family:var(--font-d);font-size:19px;color:var(--text-1);line-height:1.2;margin-bottom:4px}
+.phase-when{font-size:11.5px;color:var(--text-4)}
+.phase-r{padding:22px 0 22px 28px;border-left:1px solid var(--border);position:relative}
+.phase-r::before{
+  content:'';position:absolute;left:-5px;top:30px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--text-1);border:2.5px solid var(--bg);
+}
+.phase-title{font-size:14.5px;font-weight:500;color:var(--text-1);margin-bottom:8px}
+.phase-tasks{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.phase-task{display:flex;gap:8px;font-size:12.5px;color:var(--text-3);line-height:1.55}
+.phase-task::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--border-deep);flex-shrink:0;margin-top:6px}
+.phase-kpi{
+  display:inline-block;padding:7px 13px;background:var(--bg-raised);
+  border-radius:6px;border-left:2.5px solid var(--text-1);
+  font-size:12.5px;color:var(--text-2);
+}
+.phase-kpi strong{color:var(--text-1);font-weight:500}
+
+/* ── FOOTER ──────────────────────────────── */
+.foot{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--text-4)}
+h3{font-size:14.5px;font-weight:500;color:var(--text-1);margin:20px 0 10px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#s1">项目概述</a>
+  <a href="#s2">需求分析</a>
+  <a href="#s3">方案全景</a>
+  <a href="#s4">策略工具</a>
+  <a href="#s5">生产流水线</a>
+  <a href="#s6">分类AI方案</a>
+  <a href="#s7">落地路径</a>
+</nav>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-label">方案调研 · 2025</div>
+  <h1>日产<em>千图</em><br>方案调研</h1>
+  <p class="cover-sub">围绕高频低创意营销需求，构建模板结构化 + AI生成 + 自动化流水线的设计生产体系，实现单人日产 1000 张的系统化能力。</p>
+  <div class="kpi-strip">
+    <div class="kpi"><div class="kpi-val">≥1000</div><div class="kpi-key">单人日产量（张）</div></div>
+    <div class="kpi"><div class="kpi-val">≥70%</div><div class="kpi-key">AI 覆盖率</div></div>
+    <div class="kpi"><div class="kpi-val">≥50%</div><div class="kpi-key">效率提升</div></div>
+    <div class="kpi"><div class="kpi-val">≥85%</div><div class="kpi-key">模板复用率</div></div>
+    <div class="kpi"><div class="kpi-val">≤20%</div><div class="kpi-key">人工介入率</div></div>
+  </div>
+</div>
+
+<!-- 01 概述 -->
+<div class="sec" id="s1">
+  <div class="sec-num">01 — 项目概述</div>
+  <h2>从人工执行到系统化生产</h2>
+  <p class="sec-sub">当前月均产出约 2,200 张，全流程人工执行，AI 仅作为分散工具使用。</p>
+
+  <div class="metric-row">
+    <div class="mc"><div class="mc-val">~100</div><div class="mc-key">当前单人日产量（张）</div></div>
+    <div class="mc"><div class="mc-val hi">1,000+</div><div class="mc-key">目标单人日产量（张）</div></div>
+    <div class="mc"><div class="mc-val">~2,200</div><div class="mc-key">月总产量（张）</div></div>
+    <div class="mc"><div class="mc-val">90%</div><div class="mc-key">模板已覆盖（但不可调度）</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>核心判断：</strong>模板覆盖率已达 90%，本质是变量替换问题，不是创意问题。瓶颈在于模板缺乏结构定义，无法被系统调度。
+  </div>
+
+  <div class="compare">
+    <div class="cmp now">
+      <div class="cmp-label">现状</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>需求分配、模板选择、执行——全靠人工</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>PSD 模板无结构定义，不可程序化调用</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>AI 工具分散，未接入流程</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>多语言版本逐一手工制作</div>
+    </div>
+    <div class="cmp goal">
+      <div class="cmp-label">目标</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>需求提交即自动解析、匹配、渲染</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>模板结构化，变量可程序化注入</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>LLM 串联全流程，1 人监控运转</div>
+      <div class="cmp-row"><span class="cmp-dot"></span>多语言版本一键批量产出</div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 需求分析 -->
+<div class="sec" id="s2">
+  <div class="sec-num">02 — 营销需求现状分析</div>
+  <h2>六类需求，差异化程度不同</h2>
+  <p class="sec-sub">自动化可行性取决于<strong>变量是否明确 × 内容量是否固定</strong>，不是"有没有模板"。</p>
+
+  <div class="demand-grid">
+    <div class="dc p0">
+      <div class="dc-pct">30%</div>
+      <div class="dc-tier">A · P0 · 全自动</div>
+      <div class="dc-name">资源位 banner</div>
+      <div class="dc-desc">结构固定，变量明确。单次出 7–8 种尺寸，非等比缩放靠人工。</div>
+      <div class="dc-tags"><span class="tag tag-auto">变量替换</span><span class="tag tag-auto">多尺寸批出</span></div>
+    </div>
+    <div class="dc p0">
+      <div class="dc-pct">10%</div>
+      <div class="dc-tier">B · P0 · 全自动</div>
+      <div class="dc-name">国际化多语言</div>
+      <div class="dc-desc">同一设计出中/英/俄 3–5 语言版。结构一致，仅文字变量不同。</div>
+      <div class="dc-tags"><span class="tag tag-auto">语言变量替换</span><span class="tag tag-auto">字号自适应</span></div>
+    </div>
+    <div class="dc p1">
+      <div class="dc-pct">25%</div>
+      <div class="dc-tier">C · P1 · 半自动</div>
+      <div class="dc-name">战报长图</div>
+      <div class="dc-desc">HOT SALE / CRAZY REPORT 系列。结构固定，品牌条目数不定，1125×N px 高度动态。</div>
+      <div class="dc-tags"><span class="tag tag-semi">动态排版</span><span class="tag tag-semi">数据驱动</span></div>
+    </div>
+    <div class="dc p1">
+      <div class="dc-pct">15%</div>
+      <div class="dc-tier">D · P1 · 半自动</div>
+      <div class="dc-name">简单活动 KV</div>
+      <div class="dc-desc">618/节日横版，有参考模板。每次活动配色/主视觉有变化，需人工确认方向。</div>
+      <div class="dc-tags"><span class="tag tag-semi">AI出方案</span><span class="tag tag-semi">确认后自动执行</span></div>
+    </div>
+    <div class="dc p2">
+      <div class="dc-pct">12%</div>
+      <div class="dc-tier">E · P2 · AI辅助</div>
+      <div class="dc-name">复杂创意 KV</div>
+      <div class="dc-desc">DEBUT/品牌活动，3D合成+创意字体。AI 生成素材参考，人工主导合成。</div>
+      <div class="dc-tags"><span class="tag tag-human">人工主导</span><span class="tag tag-human">AI辅助素材</span></div>
+    </div>
+    <div class="dc p2">
+      <div class="dc-pct">8%</div>
+      <div class="dc-tier">F · P1 · 即梦解决</div>
+      <div class="dc-name">动图 GIF</div>
+      <div class="dc-desc">用即梦图生视频能力生成动效版本，结合静态模板框架，替代 AE 手工制作。</div>
+      <div class="dc-tags"><span class="tag tag-semi">即梦生成</span><span class="tag tag-semi">模板框架</span></div>
+    </div>
+  </div>
+
+  <div class="auto-bar-wrap">
+    <div class="auto-bar-label">需求量自动化分布</div>
+    <div class="auto-bar">
+      <div class="ab ab-1"><span>全自动 40%</span></div>
+      <div class="ab ab-2"><span>半自动 40%</span></div>
+      <div class="ab ab-3"><span>辅助 12%</span></div>
+      <div class="ab ab-4"><span>动图 8%</span></div>
+    </div>
+    <div class="auto-legend">
+      <div class="al"><span class="al-dot" style="background:var(--gray-0)"></span>全自动：资源位套版 + 国际化版本</div>
+      <div class="al"><span class="al-dot" style="background:var(--gray-3)"></span>半自动：战报长图 + 简单 KV</div>
+      <div class="al"><span class="al-dot" style="background:var(--amber)"></span>AI辅助：复杂创意 KV</div>
+      <div class="al"><span class="al-dot" style="background:var(--gray-5)"></span>动图：即梦图生视频</div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 方案全景 -->
+<div class="sec" id="s3">
+  <div class="sec-num">03 — 方案全景图</div>
+  <h2>三轨并行，按类型分治</h2>
+  <p class="sec-sub">统一需求入口路由至三条轨道，共用质检和交付出口。</p>
+
+  <div class="pano">
+    <div class="tc tc-1">
+      <div class="tc-head">
+        <div class="tc-head-badge">Track 1 · 全自动</div>
+        <div class="tc-head-name">变量注入批量渲染</div>
+        <div class="tc-head-scope">A + B · 约 40% 需求</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-step"><div class="ts-n">1</div><div class="ts-t"><strong>飞书表单</strong>提交 SKU / 文案 / 语言</div></div>
+        <div class="tc-step"><div class="ts-n">2</div><div class="ts-t"><strong>Claude</strong> 解析输出 JSON 参数</div></div>
+        <div class="tc-step"><div class="ts-n">3</div><div class="ts-t"><strong>规则+向量</strong>匹配模板</div></div>
+        <div class="tc-step"><div class="ts-n">4</div><div class="ts-t"><strong>PS UXP 脚本</strong>注入变量，多尺寸导出</div></div>
+        <div class="tc-step"><div class="ts-n">5</div><div class="ts-t"><strong>自动质检</strong>规则 + Vision，5% 抽检</div></div>
+      </div>
+    </div>
+    <div class="tc tc-2">
+      <div class="tc-head">
+        <div class="tc-head-badge">Track 2 · 半自动</div>
+        <div class="tc-head-name">动态排版 + 确认</div>
+        <div class="tc-head-scope">C + D · 约 40% 需求</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-step"><div class="ts-n">1</div><div class="ts-t"><strong>飞书表单</strong>上传数据 / 活动简报</div></div>
+        <div class="tc-step"><div class="ts-n">2</div><div class="ts-t"><strong>Claude</strong> 提取数据 / 生成配色方案</div></div>
+        <div class="tc-step"><div class="ts-n">3</div><div class="ts-t"><strong>设计师确认</strong>飞书 Bot 选 A/B/C，&lt;5 分钟</div></div>
+        <div class="tc-step"><div class="ts-n">4</div><div class="ts-t"><strong>Figma + Make</strong>动态排版，自动导出</div></div>
+        <div class="tc-step"><div class="ts-n">5</div><div class="ts-t"><strong>自动质检</strong>规则 + Vision，20% 抽检</div></div>
+      </div>
+    </div>
+    <div class="tc tc-3">
+      <div class="tc-head">
+        <div class="tc-head-badge">Track 3 · 辅助+即梦</div>
+        <div class="tc-head-name">AI素材 + 人工创作</div>
+        <div class="tc-head-scope">E + F · 约 20% 需求</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-step"><div class="ts-n">1</div><div class="ts-t"><strong>创意简报 / 动图需求</strong>输入</div></div>
+        <div class="tc-step"><div class="ts-n">2</div><div class="ts-t"><strong>Lovart / 即梦</strong>生成背景场景或动效</div></div>
+        <div class="tc-step"><div class="ts-n">3</div><div class="ts-t">复杂 KV：<strong>设计师主导</strong>合成；动图：<strong>即梦</strong>图生视频</div></div>
+        <div class="tc-step"><div class="ts-n">4</div><div class="ts-t"><strong>转入 Track 2</strong>完成稿自动多尺寸延展</div></div>
+        <div class="tc-step"><div class="ts-n">5</div><div class="ts-t"><strong>质检</strong>全量人工质检</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shared-grid">
+    <div class="shared-card">
+      <div class="shared-lbl">统一入口</div>
+      <div class="shared-txt">飞书多维表格 → Webhook → n8n/Make 调度 → 自动路由轨道</div>
+    </div>
+    <div class="shared-card">
+      <div class="shared-lbl">统一出口</div>
+      <div class="shared-txt">物料库归档 + 命名规范 + 飞书通知 + 生产数据入库优化</div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 策略工具 -->
+<div class="sec" id="s4">
+  <div class="sec-num">04 — 核心策略及工具选型</div>
+  <h2>已有工具，最优组合</h2>
+  <p class="sec-sub">优先使用团队现有工具，不引入多余新平台。</p>
+
+  <div class="tools-grid">
+    <div class="tool">
+      <div class="tool-name">Claude / GPT</div>
+      <div class="tool-role">需求解析、JSON 参数提取、文案生成、配色方案、视觉质检</div>
+      <div class="tool-track">Track 1 · 2 · 3 通用</div>
+    </div>
+    <div class="tool">
+      <div class="tool-name">Photoshop UXP</div>
+      <div class="tool-role">PSD 图层变量注入、批量渲染、多尺寸导出。复用现有 PSD 资产</div>
+      <div class="tool-track t1">Track 1 核心渲染</div>
+    </div>
+    <div class="tool">
+      <div class="tool-name">Figma + Make</div>
+      <div class="tool-role">战报动态排版：Auto Layout 撑开高度，Make 调度 API 触发导出</div>
+      <div class="tool-track t2">Track 2 战报渲染</div>
+    </div>
+    <div class="tool">
+      <div class="tool-name">即梦 AI</div>
+      <div class="tool-role">图生视频解决动图 GIF 批量生产，同时支持复杂 KV 背景场景生成</div>
+      <div class="tool-track t3">Track 3 · 动图专项</div>
+    </div>
+    <div class="tool">
+      <div class="tool-name">Lovart</div>
+      <div class="tool-role">复杂 KV 背景场景生成、氛围参考图、多风格方向候选（团队已在使用）</div>
+      <div class="tool-track t3">Track 3 素材生成</div>
+    </div>
+    <div class="tool">
+      <div class="tool-name">飞书多维表格</div>
+      <div class="tool-role">统一需求录入，字段约束，Webhook 触发，Bot 推送确认节点</div>
+      <div class="tool-track">需求入口 + 通知</div>
+    </div>
+    <div class="tool">
+      <div class="tool-name">n8n / Make</div>
+      <div class="tool-role">无代码工作流编排，串联节点，处理分支，触发渲染和质检</div>
+      <div class="tool-track">流程调度层</div>
+    </div>
+    <div class="tool">
+      <div class="tool-name">Claude Vision</div>
+      <div class="tool-role">视觉 AI 质检：logo 遮挡、文字可读性、色彩对比度自动检测</div>
+      <div class="tool-track">质检层</div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 流水线 -->
+<div class="sec" id="s5">
+  <div class="sec-num">05 — 统一生产流水线</div>
+  <h2>7 步，全链路覆盖</h2>
+  <p class="sec-sub">三条轨道共用需求入口和质检交付出口，中间节点按类型自动路由。</p>
+
+  <div class="pipe">
+    <div class="ps">
+      <div class="pl"><div class="pn">1</div><div class="p-line"></div></div>
+      <div class="pr">
+        <div class="ph"><span class="pname">结构化需求提交</span><span class="pbadge pb-human">人工录入</span></div>
+        <div class="pbox"><ul>
+          <li>Track 1：SKU / 文案 / 语言 / 目标尺寸</li>
+          <li>Track 2 战报：数据表格上传</li>
+          <li>Track 2 KV：活动名称 / 主题色 / 参考图</li>
+          <li>Track 3：创意简报 / 动图方向描述</li>
+        </ul></div>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="pl"><div class="pn hi">2</div><div class="p-line"></div></div>
+      <div class="pr">
+        <div class="ph"><span class="pname">AI 解析 + 路由</span><span class="pbadge pb-ai">Claude API</span></div>
+        <p class="pdesc">自然语言 → 结构化 JSON，判断类型，分配轨道。违禁词检测，置信度低升级半自动。</p>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="pl"><div class="pn">3</div><div class="p-line"></div></div>
+      <div class="pr">
+        <div class="ph"><span class="pname">模板匹配</span><span class="pbadge pb-ai">规则 + 向量</span></div>
+        <p class="pdesc">规则引擎精确匹配，未命中走语义向量检索，相似度 &gt;0.85 自动选用。战报类直接进渲染引擎。</p>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="pl"><div class="pn hi">4</div><div class="p-line"></div></div>
+      <div class="pr">
+        <div class="ph">
+          <span class="pname">分轨生产</span>
+          <span class="pbadge pb-auto">T1 全自动</span>
+          <span class="pbadge pb-mix" style="margin-left:4px">T2 半自动</span>
+          <span class="pbadge pb-human" style="margin-left:4px">T3 辅助</span>
+        </div>
+        <div class="pbox"><ul>
+          <li>Track 1：JSON → PS UXP → 图层替换 → 多尺寸导出（全自动）</li>
+          <li>Track 2 战报：Figma Auto Layout 动态排版 → Make 触发 API 导出</li>
+          <li>Track 2 KV：Claude 生成配色 → 飞书 Bot 确认 → 脚本执行</li>
+          <li>Track 3 复杂 KV：Lovart 生成背景 → 设计师合成 → 转 Track 2 延展</li>
+          <li>Track 3 动图：即梦图生视频 → 导出 GIF/MP4</li>
+        </ul></div>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="pl"><div class="pn">5</div><div class="p-line"></div></div>
+      <div class="pr">
+        <div class="ph"><span class="pname">多尺寸批量导出</span><span class="pbadge pb-auto">全自动</span></div>
+        <p class="pdesc">每个尺寸有独立布局规则（非等比缩放），一次提交自动产出全部目标规格。</p>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="pl"><div class="pn hi">6</div><div class="p-line"></div></div>
+      <div class="pr">
+        <div class="ph">
+          <span class="pname">双层质检</span>
+          <span class="pbadge pb-ai">规则 + Vision AI</span>
+          <span class="pbadge pb-human" style="margin-left:4px">5–20% 抽检</span>
+        </div>
+        <div class="pbox"><ul>
+          <li>规则：文字溢出 / 分辨率不足 / 违禁词 / 图层缺失</li>
+          <li>Vision AI：logo 遮挡 / 文字可读性 / 色彩对比度</li>
+          <li>Track 1 抽检 5%，Track 2 抽检 20%，Track 3 全量人工</li>
+        </ul></div>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="pl"><div class="pn">7</div></div>
+      <div class="pr">
+        <div class="ph"><span class="pname">交付归档</span><span class="pbadge pb-auto">全自动</span></div>
+        <p class="pdesc">物料库上传 + 命名归档 + 飞书通知业务方 + 生产数据入库，反向优化模板匹配。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 分类AI方案 -->
+<div class="sec" id="s6">
+  <div class="sec-num">06 — 按类型定制 AI 解决方式</div>
+  <h2>每种需求类型的具体 AI 方案</h2>
+  <p class="sec-sub">不同类型的 AI 介入方式不同，工具组合各有侧重。</p>
+
+  <div class="ai-grid">
+    <div class="ai-card">
+      <div class="ai-head">
+        <div>需求类型</div><div>优先级</div><div>AI 角色</div><div>AI 解决方式</div>
+      </div>
+
+      <div class="ai-row">
+        <div class="ai-cell"><div class="ai-type">资源位 banner</div><div class="ai-sub">套版换内容 · 30%</div></div>
+        <div class="ai-cell"><span class="pri"><span class="pri-dot pd0"></span><span class="c0">P0</span></span></div>
+        <div class="ai-cell"><span class="tag tag-auto">执行者</span></div>
+        <div class="ai-cell">
+          <div class="ai-method">
+            <div class="flow">
+              <span class="flow-step">飞书表单</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Claude 解析</span><span class="flow-arrow">→</span>
+              <span class="flow-step">JSON 参数</span><span class="flow-arrow">→</span>
+              <span class="flow-step">PS UXP 渲染</span><span class="flow-arrow">→</span>
+              <span class="flow-step">多尺寸导出</span>
+            </div>
+            <div><span class="ai-tool key">Claude API</span><span class="ai-tool">PS UXP</span><span class="ai-tool">n8n</span></div>
+            <div class="ai-note">难点：7–8 种尺寸各建独立画板，每个画板有独立布局规则，不是等比缩放。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-row">
+        <div class="ai-cell"><div class="ai-type">国际化多语言</div><div class="ai-sub">中/英/俄版本 · 10%</div></div>
+        <div class="ai-cell"><span class="pri"><span class="pri-dot pd0"></span><span class="c0">P0</span></span></div>
+        <div class="ai-cell"><span class="tag tag-auto">执行者</span></div>
+        <div class="ai-cell">
+          <div class="ai-method">
+            <div class="flow">
+              <span class="flow-step">语言变量 JSON</span><span class="flow-arrow">→</span>
+              <span class="flow-step">字体自动切换</span><span class="flow-arrow">→</span>
+              <span class="flow-step">字号自适应</span><span class="flow-arrow">→</span>
+              <span class="flow-step">批量渲染</span>
+            </div>
+            <div><span class="ai-tool key">Claude API</span><span class="ai-tool">PS UXP</span><span class="ai-tool">多语言字体库</span></div>
+            <div class="ai-note">难点：俄语比中文宽约 1.4×，脚本检测超限后自动缩小字号至原字号 75%。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-row">
+        <div class="ai-cell"><div class="ai-type">战报长图</div><div class="ai-sub">1125×N px · 25%</div></div>
+        <div class="ai-cell"><span class="pri"><span class="pri-dot pd1"></span><span class="c1">P1</span></span></div>
+        <div class="ai-cell"><span class="tag tag-semi">排版引擎</span></div>
+        <div class="ai-cell">
+          <div class="ai-method">
+            <div class="flow">
+              <span class="flow-step">数据表格上传</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Claude 提取结构</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Figma Auto Layout</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Make 触发导出</span>
+            </div>
+            <div><span class="ai-tool key">Claude API</span><span class="ai-tool blue">Figma</span><span class="ai-tool blue">Make</span></div>
+            <div class="ai-note">难点：PSD 高度固定无法处理动态 N 条目。Figma Auto Layout 自动撑开内容区，API 读取实际高度后导出。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-row">
+        <div class="ai-cell"><div class="ai-type">简单活动 KV</div><div class="ai-sub">618/节日横版 · 15%</div></div>
+        <div class="ai-cell"><span class="pri"><span class="pri-dot pd1"></span><span class="c1">P1</span></span></div>
+        <div class="ai-cell"><span class="tag tag-semi">方案生成</span></div>
+        <div class="ai-cell">
+          <div class="ai-method">
+            <div class="flow">
+              <span class="flow-step">活动主题输入</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Claude 生成 A/B/C 方案</span><span class="flow-arrow">→</span>
+              <span class="flow-step">设计师选择</span><span class="flow-arrow">→</span>
+              <span class="flow-step">自动执行</span>
+            </div>
+            <div><span class="ai-tool key">Claude API</span><span class="ai-tool">飞书 Bot</span><span class="ai-tool">PS UXP</span></div>
+            <div class="ai-note">设计师只需选方向（&lt;5分钟），确认后系统自动产出全量尺寸变体，不参与执行。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-row">
+        <div class="ai-cell"><div class="ai-type">复杂创意 KV</div><div class="ai-sub">DEBUT/品牌活动 · 12%</div></div>
+        <div class="ai-cell"><span class="pri"><span class="pri-dot pd2"></span><span class="c2">P2</span></span></div>
+        <div class="ai-cell"><span class="tag tag-human">素材提供者</span></div>
+        <div class="ai-cell">
+          <div class="ai-method">
+            <div class="flow">
+              <span class="flow-step">创意简报</span><span class="flow-arrow">→</span>
+              <span class="flow-step">Lovart 生成背景 3–5 方向</span><span class="flow-arrow">→</span>
+              <span class="flow-step">设计师合成</span><span class="flow-arrow">→</span>
+              <span class="flow-step">转 Track 2 延展</span>
+            </div>
+            <div><span class="ai-tool amber">Lovart</span><span class="ai-tool amber">即梦</span><span class="ai-tool">Photoshop</span></div>
+            <div class="ai-note">AI 负责提供素材参考，设计师负责创意判断和品牌把控。尺寸延展由系统自动完成。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-row">
+        <div class="ai-cell"><div class="ai-type">动图 GIF</div><div class="ai-sub">动效营销类 · 8%</div></div>
+        <div class="ai-cell"><span class="pri"><span class="pri-dot pd1"></span><span class="c1">P1</span></span></div>
+        <div class="ai-cell"><span class="tag tag-semi">生成执行</span></div>
+        <div class="ai-cell">
+          <div class="ai-method">
+            <div class="flow">
+              <span class="flow-step">静态模板图</span><span class="flow-arrow">→</span>
+              <span class="flow-step">即梦图生视频</span><span class="flow-arrow">→</span>
+              <span class="flow-step">动效参数控制</span><span class="flow-arrow">→</span>
+              <span class="flow-step">导出 GIF/MP4</span>
+            </div>
+            <div><span class="ai-tool amber">即梦 AI</span><span class="ai-tool">模板静态图</span></div>
+            <div class="ai-note">以静态 banner 模板为基础，用即梦图生视频生成动效版本，避免 AE 手工制作。同一套模板可批量生成多个动效变体。</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 07 落地路径 -->
+<div class="sec" id="s7">
+  <div class="sec-num">07 — 落地路径</div>
+  <h2>一个季度，三阶段推进</h2>
+  <p class="sec-sub">按 P0 → P1 → P2 顺序，每阶段跑通一条轨道后再扩展，全程约 13 周。</p>
+
+  <div class="phase-list">
+    <div class="phase-item">
+      <div class="phase-l">
+        <div class="phase-num">Phase 1 · P0</div>
+        <div class="phase-time">Track 1<br>全自动上线</div>
+        <div class="phase-when">第 1–4 周</div>
+      </div>
+      <div class="phase-r">
+        <div class="phase-title">资源位套版 + 国际化：全链路打通</div>
+        <div class="phase-tasks">
+          <div class="phase-task">Top 15 高频 PSD 模板完成图层命名规范化（@/#/$ 前缀约定）</div>
+          <div class="phase-task">每个模板每个尺寸建立独立布局规则文件</div>
+          <div class="phase-task">PS UXP 渲染脚本开发 + 飞书表单需求入口搭建</div>
+          <div class="phase-task">Claude 需求解析测试，30+ 真实需求验证 JSON 准确率</div>
+          <div class="phase-task">国际化：语言变量 JSON 规范 + 字号自适应逻辑开发</div>
+        </div>
+        <div class="phase-kpi">验收：15 个模板全自动，人工干预 &lt;15%，<strong>日产 300+ 张</strong></div>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-l">
+        <div class="phase-num">Phase 2 · P1</div>
+        <div class="phase-time">Track 2 + 3<br>半自动 + 即梦</div>
+        <div class="phase-when">第 5–9 周</div>
+      </div>
+      <div class="phase-r">
+        <div class="phase-title">战报动态排版 + KV 确认机制 + 动图 AI 化</div>
+        <div class="phase-tasks">
+          <div class="phase-task">在 Figma 里重建战报模板（固定头部 + 动态条目组件 + 固定尾部）</div>
+          <div class="phase-task">Make 工作流：数据 → Figma API 注入 → 读取高度 → 触发导出</div>
+          <div class="phase-task">Claude 配色建议 + 飞书 Bot 确认机制（设计师选 A/B/C）</div>
+          <div class="phase-task">即梦图生视频接入动图需求，建立静态模板 → 动效转换规范</div>
+          <div class="phase-task">全量模板库结构化（90+ 模板），建立向量检索索引</div>
+        </div>
+        <div class="phase-kpi">验收：战报自动化率 &gt;85%，动图 AI 生成，<strong>日产 600–800 张 / 1人运营</strong></div>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-l">
+        <div class="phase-num">Phase 3 · P2</div>
+        <div class="phase-time">Track 3<br>创意接入</div>
+        <div class="phase-when">第 10–13 周</div>
+      </div>
+      <div class="phase-r">
+        <div class="phase-title">复杂 KV 素材 AI 化 + 系统规模化</div>
+        <div class="phase-tasks">
+          <div class="phase-task">Lovart/即梦 prompt 规范库建立（运动/时尚/节日/潮流等场景）</div>
+          <div class="phase-task">复杂 KV 完成稿自动进 Track 2 做多尺寸延展，设计师不再手工改尺寸</div>
+          <div class="phase-task">渲染引擎迁移至服务器端，去除本地 PS 依赖，支持并发</div>
+          <div class="phase-task">基于历史生产数据优化模板匹配算法，命中率提升至 &gt;90%</div>
+        </div>
+        <div class="phase-kpi">验收：六类需求全覆盖，<strong>日产 1,000+ 张 / 人工介入 &lt;5%</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:24px">
+    <strong>本周可以立即开始：</strong>打开 5 个最高频资源位 banner PSD，1 小时完成图层命名规范化；整理需求字段建飞书表单；把一条真实需求发给 Claude，验证 JSON 输出准确率。三件事跑通，Track 1 可行性就验证了。
+  </div>
+</div>
+
+<div class="foot">
+  <span>日产千图方案调研</span>
+  <span>2025</span>
+</div>
+
+</body>
+</html>
